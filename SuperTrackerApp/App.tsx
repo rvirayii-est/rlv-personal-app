@@ -5,6 +5,7 @@
  * @format
  */
 
+import React from 'react';
 import { NewAppScreen } from '@react-native/new-app-screen';
 import { NavigationContainer } from '@react-navigation/native';
 import DrawerNavigator from './src/navigation/DrawerNavigator';
