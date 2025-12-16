@@ -299,6 +299,7 @@ const mobileMenuOpen = ref(false)
             <a href="#features" class="text-white/75 hover:text-white transition-colors">Features</a>
             <a href="#team" class="text-white/75 hover:text-white transition-colors">Team</a>
             <a href="#partners" class="text-white/75 hover:text-white transition-colors">Partners</a>
+            <router-link to="/login" class="text-white/75 hover:text-white transition-colors">Login</router-link>
             <button class="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-2 rounded-full hover:from-purple-700 hover:to-purple-800 transition-all">
               Get Started
             </button>
