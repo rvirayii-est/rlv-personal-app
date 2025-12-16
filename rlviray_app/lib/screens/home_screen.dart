@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import '../services/user_service.dart';
 import '../services/note_service.dart';
+import '../services/todo_service.dart';
+import '../services/pomodoro_service.dart';
 import 'user_list_screen.dart';
 import 'note_list_screen.dart';
+import 'todo_list_screen.dart';
+import 'pomodoro_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,9 +18,15 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final UserService _userService = UserService();
   final NoteService _noteService = NoteService();
+  final TodoService _todoService = TodoService();
+  final PomodoroService _pomodoroService = PomodoroService();
 
   int _userCount = 0;
   int _noteCount = 0;
+  int _todoCount = 0;
+  int _pendingTodoCount = 0;
+  int _pomodoroTodaySessions = 0;
+  int _pomodoroTodayFocusTime = 0;
   bool _isLoading = true;
 
   @override
@@ -30,9 +40,17 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final userCount = await _userService.getUserCount();
       final noteCount = await _noteService.getNoteCount();
+      final todoCount = await _todoService.getTodoCount();
+      final pendingCount = await _todoService.getPendingCount();
+      final pomodoroTodaySessions = await _pomodoroService.getTodayWorkSessionCount();
+      final pomodoroTodayFocusTime = await _pomodoroService.getTodayFocusTime();
       setState(() {
         _userCount = userCount;
         _noteCount = noteCount;
+        _todoCount = todoCount;
+        _pendingTodoCount = pendingCount;
+        _pomodoroTodaySessions = pomodoroTodaySessions;
+        _pomodoroTodayFocusTime = pomodoroTodayFocusTime;
         _isLoading = false;
       });
     } catch (e) {
@@ -88,6 +106,24 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.green,
                     onTap: () => _navigateToNotes(),
                   ),
+                  const SizedBox(height: 16),
+                  _buildStatCard(
+                    title: 'Todos',
+                    count: _todoCount,
+                    icon: Icons.check_circle,
+                    color: Colors.purple,
+                    onTap: () => _navigateToTodos(),
+                    subtitle: '$_pendingTodoCount pending',
+                  ),
+                  const SizedBox(height: 16),
+                  _buildStatCard(
+                    title: 'Pomodoro',
+                    count: _pomodoroTodaySessions,
+                    icon: Icons.timer,
+                    color: Colors.orange,
+                    onTap: () => _navigateToPomodoro(),
+                    subtitle: '$_pomodoroTodayFocusTime minutes today',
+                  ),
                   const SizedBox(height: 32),
                   _buildFeatureList(),
                 ],
@@ -102,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
     required IconData icon,
     required Color color,
     required VoidCallback onTap,
+    String? subtitle,
   }) {
     return Card(
       elevation: 4,
@@ -141,6 +178,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: color,
                       ),
                     ),
+                    if (subtitle != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -242,6 +289,22 @@ class _HomeScreenState extends State<HomeScreen> {
     await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const NoteListScreen()),
+    );
+    _loadCounts();
+  }
+
+  void _navigateToTodos() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const TodoListScreen()),
+    );
+    _loadCounts();
+  }
+
+  void _navigateToPomodoro() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PomodoroScreen()),
     );
     _loadCounts();
   }

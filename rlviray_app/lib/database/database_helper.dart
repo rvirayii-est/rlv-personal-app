@@ -18,6 +18,8 @@ class DatabaseHelper {
   // Table names
   static const String tableUsers = 'users';
   static const String tableNotes = 'notes';
+  static const String tableTodos = 'todos';
+  static const String tablePomodoroSessions = 'pomodoro_sessions';
 
   // Users table columns
   static const String columnUserId = 'id';
@@ -33,6 +35,26 @@ class DatabaseHelper {
   static const String columnNoteUserId = 'user_id';
   static const String columnNoteCreatedAt = 'created_at';
   static const String columnNoteUpdatedAt = 'updated_at';
+
+  // Todos table columns
+  static const String columnTodoId = 'id';
+  static const String columnTodoTitle = 'title';
+  static const String columnTodoDescription = 'description';
+  static const String columnTodoIsCompleted = 'is_completed';
+  static const String columnTodoDueDate = 'due_date';
+  static const String columnTodoPriority = 'priority';
+  static const String columnTodoCreatedAt = 'created_at';
+  static const String columnTodoUpdatedAt = 'updated_at';
+
+  // Pomodoro sessions table columns
+  static const String columnPomodoroId = 'id';
+  static const String columnPomodoroType = 'type';
+  static const String columnPomodoroDuration = 'duration_minutes';
+  static const String columnPomodoroStartTime = 'start_time';
+  static const String columnPomodoroEndTime = 'end_time';
+  static const String columnPomodoroCompleted = 'was_completed';
+  static const String columnPomodoroNotes = 'notes';
+  static const String columnPomodoroCreatedAt = 'created_at';
 
   // Get database instance
   Future<Database> get database async {
@@ -77,6 +99,34 @@ class DatabaseHelper {
         $columnNoteCreatedAt TEXT NOT NULL,
         $columnNoteUpdatedAt TEXT NOT NULL,
         FOREIGN KEY ($columnNoteUserId) REFERENCES $tableUsers ($columnUserId) ON DELETE CASCADE
+      )
+    ''');
+
+    // Create todos table
+    await db.execute('''
+      CREATE TABLE $tableTodos (
+        $columnTodoId INTEGER PRIMARY KEY AUTOINCREMENT,
+        $columnTodoTitle TEXT NOT NULL,
+        $columnTodoDescription TEXT,
+        $columnTodoIsCompleted INTEGER NOT NULL DEFAULT 0,
+        $columnTodoDueDate TEXT,
+        $columnTodoPriority TEXT NOT NULL DEFAULT 'medium',
+        $columnTodoCreatedAt TEXT NOT NULL,
+        $columnTodoUpdatedAt TEXT NOT NULL
+      )
+    ''');
+
+    // Create pomodoro sessions table
+    await db.execute('''
+      CREATE TABLE $tablePomodoroSessions (
+        $columnPomodoroId INTEGER PRIMARY KEY AUTOINCREMENT,
+        $columnPomodoroType TEXT NOT NULL,
+        $columnPomodoroDuration INTEGER NOT NULL,
+        $columnPomodoroStartTime TEXT NOT NULL,
+        $columnPomodoroEndTime TEXT NOT NULL,
+        $columnPomodoroCompleted INTEGER NOT NULL DEFAULT 1,
+        $columnPomodoroNotes TEXT,
+        $columnPomodoroCreatedAt TEXT NOT NULL
       )
     ''');
 
